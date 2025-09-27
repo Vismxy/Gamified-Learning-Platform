@@ -22,27 +22,30 @@ export function ContentModerationPanel({ pendingContent, onContentModerated }: C
   const { toast } = useToast()
   const adminService = AdminService.getInstance()
 
-const handleModerateContent = async (content: { id: string; status: "approved" | "rejected"; reviewNotes?: string }) => {
-  const { id, status, reviewNotes } = content
-
-  try {
-    const moderatedContent = await adminService.moderateContent(id, status, reviewNotes)
-    onContentModerated({ id, status, reviewNotes }) // pass single object
-    setReviewingContent(null)
-    setReviewNotes("")
-    toast({
-      title: `Content ${status}`,
-      description: `The content has been ${status} successfully.`,
-    })
-  } catch (error) {
-    toast({
-      title: "Moderation failed",
-      description: "Please try again later.",
-      variant: "destructive",
-    })
+  // ✅ Fixed: pass full ContentModeration object
+  const handleModerateContent = async (content: ContentModeration, status: "approved" | "rejected") => {
+    try {
+      const moderatedContent = await adminService.moderateContent(content.contentId, status, reviewNotes)
+      // Pass full object with updated status and reviewNotes
+      onContentModerated({
+        ...content,
+        status,
+        reviewNotes,
+      })
+      setReviewingContent(null)
+      setReviewNotes("")
+      toast({
+        title: `Content ${status}`,
+        description: `The content has been ${status} successfully.`,
+      })
+    } catch (error) {
+      toast({
+        title: "Moderation failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      })
+    }
   }
-}
-
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -99,7 +102,7 @@ const handleModerateContent = async (content: { id: string; status: "approved" |
           ) : (
             <div className="space-y-4">
               {pendingItems.map((item) => (
-                <div key={item.id} className="border rounded-lg p-4">
+                <div key={item.contentId} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h4 className="font-medium">{item.title}</h4>
@@ -154,7 +157,7 @@ const handleModerateContent = async (content: { id: string; status: "approved" |
                           <div className="flex gap-2">
                             <Button
                               className="flex-1"
-                              onClick={() => handleModerateContent(item.contentId, "approved")}
+                              onClick={() => handleModerateContent(item, "approved")}
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Approve
@@ -162,7 +165,7 @@ const handleModerateContent = async (content: { id: string; status: "approved" |
                             <Button
                               variant="destructive"
                               className="flex-1"
-                              onClick={() => handleModerateContent(item.contentId, "rejected")}
+                              onClick={() => handleModerateContent(item, "rejected")}
                             >
                               <XCircle className="h-4 w-4 mr-2" />
                               Reject
@@ -173,10 +176,7 @@ const handleModerateContent = async (content: { id: string; status: "approved" |
                     </Dialog>
                     <Button
                       size="sm"
-                      onClick={() => {
-                        setReviewingContent(item)
-                        handleModerateContent(item.contentId, "approved")
-                      }}
+                      onClick={() => handleModerateContent(item, "approved")}
                     >
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Quick Approve
@@ -198,7 +198,7 @@ const handleModerateContent = async (content: { id: string; status: "approved" |
           <CardContent>
             <div className="space-y-3">
               {reviewedItems.slice(0, 5).map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div key={item.contentId} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div>
                     <h5 className="font-medium text-sm">{item.title}</h5>
                     <p className="text-xs text-muted-foreground">

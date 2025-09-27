@@ -19,9 +19,18 @@ interface AdminDashboardProps {
 }
 interface ContentModeration {
   id: string
-  status: "approved" | "rejected"
+  contentId: string      // add this
+  title: string          // add this
+  author: string         // add this
+  subject: string        // add this
+  type: string           // add this
+  submittedAt: Date      // add this
+  reviewedAt?: Date
+  status: "pending" | "approved" | "rejected" // include "pending"
   reviewNotes?: string
 }
+
+
 
 export function AdminDashboard({ user }: AdminDashboardProps) {
   const adminService = AdminService.getInstance()
@@ -88,11 +97,13 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
   }
 
 const handleContentModerated = async (content: ContentModeration) => {
-  const { id, status, reviewNotes } = content
+  const { contentId, status, reviewNotes } = content   // use contentId instead of id
+
+  if (status === "pending") return
 
   try {
-    const result = await adminService.moderateContent(id, status, reviewNotes)
-    setPendingContent((prev) => prev.map((c) => (c.contentId === id ? result : c)))
+    const result = await adminService.moderateContent(contentId, status, reviewNotes)
+    setPendingContent((prev) => prev.map((c) => (c.contentId === contentId ? result : c)))
     toast({
       title: `Content ${status}`,
       description: `The content has been ${status} successfully.`,
@@ -105,6 +116,8 @@ const handleContentModerated = async (content: ContentModeration) => {
     })
   }
 }
+
+
 
 
   const handleSettingsUpdated = async (updatedSettings: SystemSettings) => {
