@@ -142,7 +142,7 @@ export function AuthForm({
           </Button>
         </form>
 
-        <SocialLogin type="google" onSocialLogin={onSocialLogin} />
+        <SocialLogin onSocialLogin={onSocialLogin} />
 
 
       </TabsContent>
