@@ -17,6 +17,11 @@ import { Button } from "@/components/ui/button"
 interface AdminDashboardProps {
   user: User
 }
+interface ContentModeration {
+  id: string
+  status: "approved" | "rejected"
+  reviewNotes?: string
+}
 
 export function AdminDashboard({ user }: AdminDashboardProps) {
   const adminService = AdminService.getInstance()
@@ -82,22 +87,25 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
     }
   }
 
-  const handleContentModerated = async (contentId: string, status: "approved" | "rejected", reviewNotes?: string) => {
-    try {
-      const result = await adminService.moderateContent(contentId, status, reviewNotes)
-      setPendingContent((prev) => prev.map((c) => (c.contentId === contentId ? result : c)))
-      toast({
-        title: `Content ${status}`,
-        description: `The content has been ${status} successfully.`,
-      })
-    } catch (error) {
-      toast({
-        title: "Moderation failed",
-        description: "Failed to moderate content. Please try again.",
-        variant: "destructive",
-      })
-    }
+const handleContentModerated = async (content: ContentModeration) => {
+  const { id, status, reviewNotes } = content
+
+  try {
+    const result = await adminService.moderateContent(id, status, reviewNotes)
+    setPendingContent((prev) => prev.map((c) => (c.contentId === id ? result : c)))
+    toast({
+      title: `Content ${status}`,
+      description: `The content has been ${status} successfully.`,
+    })
+  } catch (error) {
+    toast({
+      title: "Moderation failed",
+      description: "Failed to moderate content. Please try again.",
+      variant: "destructive",
+    })
   }
+}
+
 
   const handleSettingsUpdated = async (updatedSettings: SystemSettings) => {
     try {

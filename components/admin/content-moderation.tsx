@@ -22,24 +22,27 @@ export function ContentModerationPanel({ pendingContent, onContentModerated }: C
   const { toast } = useToast()
   const adminService = AdminService.getInstance()
 
-  const handleModerateContent = async (contentId: string, status: "approved" | "rejected") => {
-    try {
-      const moderatedContent = await adminService.moderateContent(contentId, status, reviewNotes)
-      onContentModerated(moderatedContent)
-      setReviewingContent(null)
-      setReviewNotes("")
-      toast({
-        title: `Content ${status}`,
-        description: `The content has been ${status} successfully.`,
-      })
-    } catch (error) {
-      toast({
-        title: "Moderation failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
-    }
+const handleModerateContent = async (content: { id: string; status: "approved" | "rejected"; reviewNotes?: string }) => {
+  const { id, status, reviewNotes } = content
+
+  try {
+    const moderatedContent = await adminService.moderateContent(id, status, reviewNotes)
+    onContentModerated({ id, status, reviewNotes }) // pass single object
+    setReviewingContent(null)
+    setReviewNotes("")
+    toast({
+      title: `Content ${status}`,
+      description: `The content has been ${status} successfully.`,
+    })
+  } catch (error) {
+    toast({
+      title: "Moderation failed",
+      description: "Please try again later.",
+      variant: "destructive",
+    })
   }
+}
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
