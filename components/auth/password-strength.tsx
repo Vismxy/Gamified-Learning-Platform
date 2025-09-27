@@ -1,4 +1,6 @@
 import { CheckCircle, XCircle } from "lucide-react"
+import { PasswordStrength } from "./password-strength"
+
 
 interface PasswordStrengthProps {
   password: string

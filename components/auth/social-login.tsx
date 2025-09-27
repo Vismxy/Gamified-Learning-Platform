@@ -5,9 +5,10 @@ import { Separator } from "@/components/ui/separator"
 import { Github, Mail } from "lucide-react"
 
 interface SocialLoginProps {
-  onSocialLogin: (provider: string) => void
-  type: "signin" | "signup"
+  onSocialLogin: (provider: string) => void;
 }
+
+
 
 export function SocialLogin({ onSocialLogin, type }: SocialLoginProps) {
   return (

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react"
-import { PasswordStrengthIndicator } from "./password-strength"
+import { PasswordStrength } from "./password-strength"
 import { SocialLogin } from "./social-login"
 
 interface AuthFormProps {
@@ -142,7 +142,9 @@ export function AuthForm({
           </Button>
         </form>
 
-        <SocialLogin onSocialLogin={onSocialLogin} isLoading={isLoading} />
+        <SocialLogin type="google" onSocialLogin={onSocialLogin} />
+
+
       </TabsContent>
 
       <TabsContent value="signup" className="space-y-4 mt-6">
@@ -206,7 +208,7 @@ export function AuthForm({
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            <PasswordStrengthIndicator password={password} />
+            <PasswordStrength password={password} />
           </div>
 
           <div className="space-y-2">
@@ -246,7 +248,7 @@ export function AuthForm({
           </Button>
         </form>
 
-        <SocialLogin onSocialLogin={onSocialLogin} isLoading={isLoading} />
+        <SocialLogin onSocialLogin={onSocialLogin} />   // remove isLoading={isLoading}
       </TabsContent>
     </Tabs>
   )
